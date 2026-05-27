@@ -54,8 +54,40 @@ python scripts\generate_all_unified_pathways.py `
 
 ## Documentation
 
+- [Detailed usage and commands](docs/usage.md)
 - [Workflow guide](docs/reaction_pathway_workflow.md)
 - [Tool inventory](docs/tools.md)
 - [Today example data: equations and SMILES](docs/openclaw_reacnet_examples.md)
 
 The checked-in example data lives under `examples/openclaw_reacnet`.
+
+## Common Commands
+
+Show help for the main batch generator:
+
+```powershell
+python scripts\generate_all_unified_pathways.py --help
+```
+
+Generate all checked-in demo pathways:
+
+```powershell
+python scripts\generate_all_unified_pathways.py --root examples\openclaw_reacnet
+```
+
+Generate one pathway from a local OpenClaw/ReacNet folder:
+
+```powershell
+python scripts\generate_all_unified_pathways.py `
+  --root D:\data\openclaw_reacnet `
+  --only HMF_Formaldehyde_Path
+```
+
+Validate generated standalone SVG files:
+
+```powershell
+python scripts\validate_unified_svgs.py --root examples\openclaw_reacnet
+```
+
+For full command formats, input-folder rules, output files, and troubleshooting,
+see [docs/usage.md](docs/usage.md).

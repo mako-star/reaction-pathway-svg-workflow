@@ -12,6 +12,9 @@ rendered, for example by `smiles-to-3d`, RDKit, PyMOL, or another molecular
 visualization route. The SVG generator focuses on connecting those molecular
 images into a consistent pathway figure.
 
+For copy-paste command lines and every script parameter, see
+[`docs/usage.md`](usage.md).
+
 ## Directory Contract
 
 Each pathway should be placed in one folder whose name ends with `Path` or
