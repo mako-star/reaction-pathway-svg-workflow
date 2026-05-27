@@ -1,0 +1,79 @@
+{
+  "title": "纤维素 → HMF 反应路径 (Cellulose C2 to HMF Path)",
+  "equation": "C₁₂H₂₂O₁₁ (纤维二糖) → C₆H₁₁O₆ + C₆H₁₁O₅ → LG + HO· + H·",
+  "layout": "linear",
+  "canvas": {
+    "width": 1456,
+    "height": 1024,
+    "background": "#ffffff",
+    "title": true
+  },
+  "molecules": [
+    {
+      "id": "C₁₂H₂₂O₁₁ (纤维二糖)",
+      "label": "C₁₂H₂₂O₁₁ (纤维二糖)",
+      "asset_path": "examples\\openclaw_reacnet\\Cellulose_C2_to_HMF_Path\\C12H22O11_bond1.2.png"
+    },
+    {
+      "id": "C₆H₁₁O₆",
+      "label": "C₆H₁₁O₆",
+      "asset_path": "examples\\openclaw_reacnet\\Cellulose_C2_to_HMF_Path\\C6H11O6_bond1.2.png"
+    },
+    {
+      "id": "C₆H₁₁O₅",
+      "label": "C₆H₁₁O₅",
+      "asset_path": "examples\\openclaw_reacnet\\Cellulose_C2_to_HMF_Path\\C6H11O5_bond1.2.png"
+    },
+    {
+      "id": "LG",
+      "label": "LG",
+      "asset_path": "examples\\openclaw_reacnet\\Cellulose_C2_to_HMF_Path\\LG_bond1.2.png"
+    },
+    {
+      "id": "HO·",
+      "label": "HO·",
+      "asset_path": "examples\\openclaw_reacnet\\Cellulose_C2_to_HMF_Path\\HO_bond1.2.png"
+    },
+    {
+      "id": "H·",
+      "label": "H·",
+      "asset_path": "examples\\openclaw_reacnet\\Cellulose_C2_to_HMF_Path\\H_bond1.2.png"
+    }
+  ],
+  "main_chain": [
+    "C₁₂H₂₂O₁₁ (纤维二糖)",
+    "C₆H₁₁O₆",
+    "LG"
+  ],
+  "reactions": [
+    {
+      "from": [
+        "C₁₂H₂₂O₁₁ (纤维二糖)"
+      ],
+      "to": [
+        "C₆H₁₁O₆"
+      ],
+      "label": "+ C₆H₁₁O₅",
+      "conditions": null,
+      "kind": "main",
+      "side_products": [
+        "C₆H₁₁O₅"
+      ]
+    },
+    {
+      "from": [
+        "C₆H₁₁O₆"
+      ],
+      "to": [
+        "LG"
+      ],
+      "label": "+ HO· + H·",
+      "conditions": null,
+      "kind": "main",
+      "side_products": [
+        "HO·",
+        "H·"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "title": "HMF → 羟基丙酮 (Hydroxyacetone-like) 反应路径",
+  "equation": "C₆H₆O₃ → C₃H₅O₂ + C₃HO; C₃H₅O₂ → CH₂O + C₂H₃O; CH₂O + H· → CH₃O; C₂H₃O + CH₃O → C₃H₆O₂",
+  "topology": "convergent",
+  "molecules": [
+    {
+      "id": "HMF",
+      "label": "HMF",
+      "formula": "C₆H₆O₃",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Hydroxyacetone_like_Path\\HMF_S1350_bond1.2.png"
+    },
+    {
+      "id": "C3H5O2",
+      "label": "C₃H₅O₂",
+      "formula": "C₃H₅O₂",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Hydroxyacetone_like_Path\\C3H5O2_S3400_bond1.2.png"
+    },
+    {
+      "id": "C3HO",
+      "label": "C₃HO",
+      "formula": "C₃HO",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Hydroxyacetone_like_Path\\C3HO_S3573_bond1.2.png"
+    },
+    {
+      "id": "CH2O",
+      "label": "CH₂O",
+      "formula": "CH₂O",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Hydroxyacetone_like_Path\\CH2O_S596_bond1.2.png"
+    },
+    {
+      "id": "C2H3O",
+      "label": "C₂H₃O",
+      "formula": "C₂H₃O",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Hydroxyacetone_like_Path\\C2H3O_S2044_bond1.2.png"
+    },
+    {
+      "id": "H",
+      "label": "H·",
+      "formula": "H·",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Hydroxyacetone_like_Path\\H_S3830_bond1.2.png"
+    },
+    {
+      "id": "CH3O",
+      "label": "CH₃O",
+      "formula": "CH₃O",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Hydroxyacetone_like_Path\\CH3O_S3359_bond1.2.png"
+    },
+    {
+      "id": "C3H6O2",
+      "label": "C₃H₆O₂",
+      "formula": "C₃H₆O₂",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Hydroxyacetone_like_Path\\C3H6O2_S2140_bond1.2.png"
+    }
+  ],
+  "main_chain": [
+    "HMF",
+    "C3H5O2",
+    "CH2O",
+    "CH3O",
+    "C3H6O2"
+  ],
+  "reactions": [
+    {
+      "from": [
+        "HMF"
+      ],
+      "to": [
+        "C3H5O2"
+      ],
+      "side_products": [
+        "C3HO"
+      ],
+      "label": "+ C₃HO"
+    },
+    {
+      "from": [
+        "C3H5O2"
+      ],
+      "to": [
+        "CH2O"
+      ],
+      "side_products": [
+        "C2H3O"
+      ],
+      "label": "+ C₂H₃O"
+    },
+    {
+      "from": [
+        "CH2O",
+        "H"
+      ],
+      "to": [
+        "CH3O"
+      ],
+      "side_products": [],
+      "label": "+ H·"
+    },
+    {
+      "from": [
+        "C2H3O",
+        "CH3O"
+      ],
+      "to": [
+        "C3H6O2"
+      ],
+      "side_products": [],
+      "label": "convergent recombination"
+    }
+  ]
+}

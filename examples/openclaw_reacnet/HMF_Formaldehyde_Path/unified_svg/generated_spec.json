@@ -1,0 +1,73 @@
+{
+  "title": "HMF → 甲醛 (Formaldehyde) 反应路径",
+  "equation": "C₆H₆O₃ (HMF) → C₃H₅O₂ + C₃HO → CH₂O + C₂H₃O",
+  "layout": "linear",
+  "canvas": {
+    "width": 1456,
+    "height": 1024,
+    "background": "#ffffff",
+    "title": true
+  },
+  "molecules": [
+    {
+      "id": "C₆H₆O₃ (HMF)",
+      "label": "C₆H₆O₃ (HMF)",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Formaldehyde_Path\\HMF_S1350_bond1.2.png"
+    },
+    {
+      "id": "C₃H₅O₂",
+      "label": "C₃H₅O₂",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Formaldehyde_Path\\C3H5O2_S3400_bond1.2.png"
+    },
+    {
+      "id": "C₃HO",
+      "label": "C₃HO",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Formaldehyde_Path\\C3HO_S3573_bond1.2.png"
+    },
+    {
+      "id": "CH₂O",
+      "label": "CH₂O",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Formaldehyde_Path\\CH2O_S596_bond1.2.png"
+    },
+    {
+      "id": "C₂H₃O",
+      "label": "C₂H₃O",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Formaldehyde_Path\\C2H3O_S2044_bond1.2.png"
+    }
+  ],
+  "main_chain": [
+    "C₆H₆O₃ (HMF)",
+    "C₃H₅O₂",
+    "CH₂O"
+  ],
+  "reactions": [
+    {
+      "from": [
+        "C₆H₆O₃ (HMF)"
+      ],
+      "to": [
+        "C₃H₅O₂"
+      ],
+      "label": "+ C₃HO",
+      "conditions": null,
+      "kind": "main",
+      "side_products": [
+        "C₃HO"
+      ]
+    },
+    {
+      "from": [
+        "C₃H₅O₂"
+      ],
+      "to": [
+        "CH₂O"
+      ],
+      "label": "+ C₂H₃O",
+      "conditions": null,
+      "kind": "main",
+      "side_products": [
+        "C₂H₃O"
+      ]
+    }
+  ]
+}

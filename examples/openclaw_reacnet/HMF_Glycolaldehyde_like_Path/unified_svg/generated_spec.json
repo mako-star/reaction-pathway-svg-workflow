@@ -1,0 +1,98 @@
+{
+  "title": "HMF → 乙醇醛 (Glycolaldehyde-like) 反应路径",
+  "equation": "C₆H₆O₃ (HMF) → C₃H₅O₂ + C₃HO → C₂H₃O + CH₂O → C₂H₄O₂ + HO·",
+  "layout": "linear",
+  "canvas": {
+    "width": 1456,
+    "height": 1024,
+    "background": "#ffffff",
+    "title": true
+  },
+  "molecules": [
+    {
+      "id": "C₆H₆O₃ (HMF)",
+      "label": "C₆H₆O₃ (HMF)",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Glycolaldehyde_like_Path\\HMF_S1350_bond1.2.png"
+    },
+    {
+      "id": "C₃H₅O₂",
+      "label": "C₃H₅O₂",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Glycolaldehyde_like_Path\\C3H5O2_S3400_bond1.2.png"
+    },
+    {
+      "id": "C₃HO",
+      "label": "C₃HO",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Glycolaldehyde_like_Path\\C3HO_S3573_bond1.2.png"
+    },
+    {
+      "id": "C₂H₃O",
+      "label": "C₂H₃O",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Glycolaldehyde_like_Path\\C2H3O_S2044_bond1.2.png"
+    },
+    {
+      "id": "CH₂O",
+      "label": "CH₂O",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Glycolaldehyde_like_Path\\CH2O_S596_bond1.2.png"
+    },
+    {
+      "id": "C₂H₄O₂",
+      "label": "C₂H₄O₂",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Glycolaldehyde_like_Path\\C2H4O2_S2012_bond1.2.png"
+    },
+    {
+      "id": "HO·",
+      "label": "HO·",
+      "asset_path": "examples\\openclaw_reacnet\\HMF_Glycolaldehyde_like_Path\\HO_S3832_bond1.2.png"
+    }
+  ],
+  "main_chain": [
+    "C₆H₆O₃ (HMF)",
+    "C₃H₅O₂",
+    "C₂H₃O",
+    "C₂H₄O₂"
+  ],
+  "reactions": [
+    {
+      "from": [
+        "C₆H₆O₃ (HMF)"
+      ],
+      "to": [
+        "C₃H₅O₂"
+      ],
+      "label": "+ C₃HO",
+      "conditions": null,
+      "kind": "main",
+      "side_products": [
+        "C₃HO"
+      ]
+    },
+    {
+      "from": [
+        "C₃H₅O₂"
+      ],
+      "to": [
+        "C₂H₃O"
+      ],
+      "label": "+ CH₂O",
+      "conditions": null,
+      "kind": "main",
+      "side_products": [
+        "CH₂O"
+      ]
+    },
+    {
+      "from": [
+        "C₂H₃O"
+      ],
+      "to": [
+        "C₂H₄O₂"
+      ],
+      "label": "+ HO·",
+      "conditions": null,
+      "kind": "main",
+      "side_products": [
+        "HO·"
+      ]
+    }
+  ]
+}

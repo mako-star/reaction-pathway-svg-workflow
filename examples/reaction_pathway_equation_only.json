@@ -1,0 +1,44 @@
+{
+  "title": "Equation-Only Pathway Demo",
+  "equation": "HMF -> C3H5O2 + C3HO -> CH2O + C2H3O",
+  "layout": "linear",
+  "canvas": {
+    "width": 1280,
+    "height": 600
+  },
+  "molecules": [
+    {
+      "id": "HMF",
+      "label": "HMF",
+      "formula": "C6H6O3",
+      "smiles": "OCc1ccc(C=O)o1"
+    },
+    {
+      "id": "C3H5O2",
+      "label": "C3H5O2",
+      "formula": "C3H5O2",
+      "smiles": "CC(=O)CO"
+    },
+    {
+      "id": "CH2O",
+      "label": "CH2O",
+      "formula": "CH2O",
+      "smiles": "C=O"
+    },
+    {
+      "id": "C3HO",
+      "label": "C3HO",
+      "formula": "C3HO",
+      "smiles": "C#CC=O",
+      "role": "side"
+    },
+    {
+      "id": "C2H3O",
+      "label": "C2H3O",
+      "formula": "C2H3O",
+      "smiles": "CC=O",
+      "role": "side"
+    }
+  ],
+  "note": "The reaction edges and main chain were inferred from the equation string."
+}

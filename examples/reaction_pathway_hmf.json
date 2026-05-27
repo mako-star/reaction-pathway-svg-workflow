@@ -1,0 +1,72 @@
+{
+  "title": "HMF Degradation Reaction Pathway",
+  "equation": "HMF -> C3H5O2 + C3HO -> CH2O + C2H3O",
+  "layout": "linear",
+  "canvas": {
+    "width": 1280,
+    "height": 600,
+    "background": "#ffffff",
+    "title": true
+  },
+  "style": {
+    "molecule_width": 190,
+    "molecule_height": 145,
+    "side_molecule_width": 145,
+    "side_molecule_height": 108
+  },
+  "molecules": [
+    {
+      "id": "HMF",
+      "label": "HMF",
+      "formula": "C6H6O3",
+      "smiles": "OCc1ccc(C=O)o1",
+      "role": "reactant"
+    },
+    {
+      "id": "C3H5O2",
+      "label": "C3H5O2",
+      "formula": "C3H5O2",
+      "smiles": "CC(=O)CO",
+      "role": "intermediate"
+    },
+    {
+      "id": "CH2O",
+      "label": "CH2O",
+      "formula": "CH2O",
+      "smiles": "C=O",
+      "role": "product"
+    },
+    {
+      "id": "C3HO",
+      "label": "C3HO",
+      "formula": "C3HO",
+      "smiles": "C#CC=O",
+      "role": "side"
+    },
+    {
+      "id": "C2H3O",
+      "label": "C2H3O",
+      "formula": "C2H3O",
+      "smiles": "CC=O",
+      "role": "side"
+    }
+  ],
+  "main_chain": ["HMF", "C3H5O2", "CH2O"],
+  "reactions": [
+    {
+      "from": "HMF",
+      "to": "C3H5O2",
+      "label": "+ C3HO",
+      "conditions": "ReaxFF fragment step",
+      "side_products": ["C3HO"]
+    },
+    {
+      "from": "C3H5O2",
+      "to": "CH2O",
+      "label": "+ C2H3O",
+      "conditions": "bond cleavage",
+      "side_products": ["C2H3O"]
+    }
+  ],
+  "note": "Demo spec: replace placeholder SMILES/intermediates with verified reaction network species."
+}
