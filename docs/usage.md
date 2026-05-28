@@ -1,22 +1,22 @@
 # Usage Guide
 
-本文档是这个项目的命令行使用手册，目标是让你后期可以直接把这些脚本包进一个前端上传流程里。
+本文档是项目的命令行使用说明。这里采用唯一输入模型：一次生成任务必须同时具备化学反应方程式、分子结构图、模板图。
 
-当前核心工作流是：
+## 0. 核心原则
+
+不要把输入拆成三种方式。正确理解是：
 
 ```text
-Path/Pass 文件夹
-  README.md 里的反应方程式
-  分子结构 PNG 图
-        |
-        v
-generated_spec.json
-        |
-        v
-pathway_unified.svg
+化学反应方程式 + 分子结构图 + 模板图 = 一个完整输入包
 ```
 
-生成结果是单文件 SVG：分子 PNG 会被压缩后内嵌进 SVG，不依赖外部图片路径，适合 Inkscape 打开和继续编辑。
+三者缺一不可：
+
+- 没有反应方程式，无法知道反应路径和物种关系。
+- 没有分子结构图，无法替换模板中的化学内容。
+- 没有模板图，无法确定最终图的布局和风格。
+
+README、JSON、asset map、脚本参数只是内部承载格式，不是独立输入方式。
 
 ## 1. 环境准备
 
@@ -26,33 +26,27 @@ pathway_unified.svg
 cd C:\Users\MECHREVO\reaction-pathway-svg-workflow
 ```
 
-可选：创建虚拟环境：
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
 安装依赖：
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-确认脚本能正常显示帮助：
+确认主脚本可用：
 
 ```powershell
 python scripts\generate_all_unified_pathways.py --help
 python scripts\validate_unified_svgs.py --help
 ```
 
-## 2. 输入文件夹格式
+## 2. 标准输入包格式
 
-每条反应路径放在一个单独文件夹里，文件夹名建议以 `Path` 或 `Pass` 结尾。批量脚本只会扫描这两类后缀。
+每条反应路径放在一个独立文件夹中，文件夹名建议以 `Path` 或 `Pass` 结尾：
 
 ```text
 HMF_Formaldehyde_Path/
   README.md
+  template.png
   HMF_S1350_bond1.2.png
   C3H5O2_S3400_bond1.2.png
   C3HO_S3573_bond1.2.png
@@ -60,9 +54,11 @@ HMF_Formaldehyde_Path/
   C2H3O_S2044_bond1.2.png
 ```
 
-`README.md` 里需要有一个包含反应箭头的代码块。脚本会提取第一个包含 `→`、`->` 或 `=>` 的代码块。
+这个文件夹必须同时包含三类输入。
 
-推荐写法：
+### 2.1 化学反应方程式
+
+当前实现从 `README.md` 中读取反应方程式。`README.md` 里必须有一个包含反应箭头的代码块：
 
 ````markdown
 ## 反应方程式
@@ -72,74 +68,77 @@ C₆H₆O₃ (HMF) → C₃H₅O₂ + C₃HO → CH₂O + C₂H₃O
 ```
 ````
 
-更复杂的路径可以在说明部分写详细步骤：
+复杂路径可以继续写详细步骤：
 
 ```markdown
 1. `C₆H₆O₃ → C₃H₅O₂ + C₃HO`
 2. `C₃H₅O₂ → CH₂O + C₂H₃O`
+3. `CH₂O + H· → CH₃O`
+4. `C₂H₃O + CH₃O → C₃H₆O₂`
 ```
 
-注意：当前通用脚本主要根据主反应链代码块自动生成布局。复杂汇聚拓扑需要专门模板，例如 `HMF_Hydroxyacetone_like_Path`。
+这些步骤用于明确并行、分支、汇聚等拓扑关系。
 
-## 3. 分子图片命名规则
+### 2.2 分子结构图
 
-脚本会把方程式里的物种名规范化后，与图片文件名匹配。
-
-常见匹配例子：
-
-| 方程式物种 | 可匹配文件名 |
-| --- | --- |
-| `HMF` | `HMF_S1350_bond1.2.png` |
-| `CH₂O` | `CH2O_S596_bond1.2.png` |
-| `C₃H₅O₂` | `C3H5O2_S3400_bond1.2.png` |
-| `HO·` | `HO_S3832_bond1.2.png` |
-| `H·` | `H_S3830_bond1.2.png` |
-
-支持的图片扩展名：
-
-```text
-.png .jpg .jpeg .svg .webp
-```
-
-最稳定的命名方式是：
+方程式中出现的每个物种都必须有对应分子结构图。推荐命名：
 
 ```text
 <species>_anything.png
 ```
 
-例如：
+示例：
+
+| 方程式物种 | 推荐图片文件 |
+| --- | --- |
+| `HMF` | `HMF_S1350_bond1.2.png` |
+| `CH₂O` | `CH2O_S596_bond1.2.png` |
+| `C₃H₅O₂` | `C3H5O2_S3400_bond1.2.png` |
+| `C₂H₃O` | `C2H3O_S2044_bond1.2.png` |
+| `H·` | `H_S3830_bond1.2.png` |
+
+支持的图片格式：
 
 ```text
-C3H6O2_S2140_bond1.2.png
-CH3O_S3359_bond1.2.png
+.png .jpg .jpeg .svg .webp
 ```
 
-## 4. 最常用脚本：批量生成 SVG
+最稳定的是 PNG。当前 unified SVG 工作流会把分子 PNG 压缩后内嵌进最终 SVG。
 
-脚本：
+### 2.3 模板图
+
+模板图必须存在。推荐命名：
+
+```text
+template.png
+```
+
+也可以放在：
+
+```text
+template/reference.png
+template.svg
+template/reference.svg
+```
+
+模板图用于定义最终 SVG 的视觉目标：
+
+- 画布比例；
+- 主路径方向；
+- 分子卡片大小；
+- 反应式框大小和位置；
+- 箭头粗细、箭头大小、虚线样式；
+- title、subtitle、step label、legend 的位置和风格。
+
+当前代码里的 `unified_card_template.py` 和 `hydroxyacetone_convergent.py` 是已经代码化的模板实现。后续接入 SAM/Roboflow 时，模板图应先被分割成卡片、箭头、文本框、legend 等模板元素，再生成可编辑 SVG。
+
+## 3. 主生成命令
+
+主脚本：
 
 ```text
 scripts/generate_all_unified_pathways.py
 ```
-
-命令格式：
-
-```powershell
-python scripts\generate_all_unified_pathways.py `
-  --root <包含多个 Path/Pass 文件夹的根目录> `
-  [--only <只生成某个文件夹名>] `
-  [--output-subdir <输出子目录名>] `
-  [--generic-only]
-```
-
-参数说明：
-
-| 参数 | 是否必填 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `--root` | 否 | `examples/openclaw_reacnet` | 包含多个 `*Path` / `*Pass` 文件夹的根目录 |
-| `--only` | 否 | 空 | 只生成指定文件夹；可以重复传多次 |
-| `--output-subdir` | 否 | `unified_svg` | 每个路径文件夹内的输出目录名 |
-| `--generic-only` | 否 | false | 强制所有路径都用通用模板，不启用自定义模板 |
 
 生成项目自带示例：
 
@@ -147,7 +146,7 @@ python scripts\generate_all_unified_pathways.py `
 python scripts\generate_all_unified_pathways.py --root examples\openclaw_reacnet
 ```
 
-生成你本地 OpenClaw/ReacNet 数据：
+生成本地 OpenClaw/ReacNet 数据：
 
 ```powershell
 python scripts\generate_all_unified_pathways.py --root D:\data\openclaw_reacnet
@@ -161,7 +160,7 @@ python scripts\generate_all_unified_pathways.py `
   --only HMF_Formaldehyde_Path
 ```
 
-只生成两条路径：
+只生成多条指定路径：
 
 ```powershell
 python scripts\generate_all_unified_pathways.py `
@@ -170,7 +169,7 @@ python scripts\generate_all_unified_pathways.py `
   --only HMF_Hydroxyacetone_like_Path
 ```
 
-改输出目录名，例如输出到 `svg_output`：
+改输出目录名：
 
 ```powershell
 python scripts\generate_all_unified_pathways.py `
@@ -178,7 +177,16 @@ python scripts\generate_all_unified_pathways.py `
   --output-subdir svg_output
 ```
 
-默认输出：
+参数说明：
+
+| 参数 | 默认值 | 说明 |
+| --- | --- | --- |
+| `--root` | `examples/openclaw_reacnet` | 包含多个完整输入包的根目录 |
+| `--only` | 空 | 只生成指定路径文件夹，可重复 |
+| `--output-subdir` | `unified_svg` | 输出子目录名 |
+| `--generic-only` | false | 开发调试用，禁用专用模板 |
+
+输出：
 
 ```text
 <PathFolder>/unified_svg/
@@ -186,111 +194,18 @@ python scripts\generate_all_unified_pathways.py `
   pathway_unified.svg
 ```
 
-其中：
+## 4. 验证命令
 
-- `pathway_unified.svg` 是最终可编辑 SVG。
-- `generated_spec.json` 是从 README 和图片资产解析出来的结构化中间文件。
-
-## 5. 生成单个通用 Path 文件夹
-
-如果你不想扫描整个根目录，可以直接调用通用模板模块：
-
-```powershell
-python -m reaction_pathway.unified_card_template <PathFolder> `
-  --output-dir <输出目录> `
-  --svg-name pathway_unified.svg
-```
-
-例子：
-
-```powershell
-python -m reaction_pathway.unified_card_template `
-  D:\data\openclaw_reacnet\HMF_Formaldehyde_Path `
-  --output-dir D:\data\openclaw_reacnet\HMF_Formaldehyde_Path\unified_svg `
-  --svg-name pathway_unified.svg
-```
-
-适用场景：
-
-- 两步或三步线性路径；
-- 有副产物分支，但没有复杂汇聚；
-- 想快速从 `README.md + PNG` 得到统一风格 SVG。
-
-## 6. 生成羟基丙酮汇聚路径专用 SVG
-
-`HMF_Hydroxyacetone_like_Path` 是四步并行汇聚反应，通用小画布会挤。因此项目里有专用模板：
-
-```text
-reaction_pathway/hydroxyacetone_convergent.py
-```
-
-命令格式：
-
-```powershell
-python -m reaction_pathway.hydroxyacetone_convergent `
-  --path-dir <HMF_Hydroxyacetone_like_Path 文件夹> `
-  --output-dir <输出目录>
-```
-
-例子：
-
-```powershell
-python -m reaction_pathway.hydroxyacetone_convergent `
-  --path-dir D:\data\openclaw_reacnet\HMF_Hydroxyacetone_like_Path `
-  --output-dir D:\data\openclaw_reacnet\HMF_Hydroxyacetone_like_Path\unified_svg
-```
-
-这个模板的输出特点：
-
-- 画布为 `2400 x 1600`；
-- 主链是 `HMF -> C3H5O2 -> CH2O -> CH3O -> C3H6O2`；
-- `C3HO` 和 `C2H3O` 作为侧支；
-- `C2H3O` 通过虚线汇聚到最终产物；
-- 右侧 legend 独立，不压住反应路径。
-
-批量脚本默认会自动识别 `HMF_Hydroxyacetone_like_Path` 并调用这个专用模板。如果你不想用专用模板，可以加：
-
-```powershell
-python scripts\generate_all_unified_pathways.py `
-  --root D:\data\openclaw_reacnet `
-  --only HMF_Hydroxyacetone_like_Path `
-  --generic-only
-```
-
-## 7. 验证生成的 SVG
-
-脚本：
-
-```text
-scripts/validate_unified_svgs.py
-```
-
-命令格式：
-
-```powershell
-python scripts\validate_unified_svgs.py `
-  --root <包含多个 Path/Pass 文件夹的根目录> `
-  [--svg-name pathway_unified.svg]
-```
-
-验证项目自带示例：
+生成后运行：
 
 ```powershell
 python scripts\validate_unified_svgs.py --root examples\openclaw_reacnet
 ```
 
-验证你本地数据：
+验证本地数据：
 
 ```powershell
 python scripts\validate_unified_svgs.py --root D:\data\openclaw_reacnet
-```
-
-验证另一个输出文件名：
-
-```powershell
-python scripts\validate_unified_svgs.py `
-  --root D:\data\openclaw_reacnet `
-  --svg-name pathway.svg
 ```
 
 验证内容：
@@ -301,204 +216,71 @@ python scripts\validate_unified_svgs.py `
 - 没有外链图片；
 - 没有 SVG `filter=`。
 
-正常输出类似：
+示例输出：
 
 ```text
 OK examples\openclaw_reacnet\HMF_Formaldehyde_Path\unified_svg\pathway_unified.svg canvas=1456x1024 embedded_png=5 external_assets=0 filters=0
 OK examples\openclaw_reacnet\HMF_Hydroxyacetone_like_Path\unified_svg\pathway_unified.svg canvas=2400x1600 embedded_png=8 external_assets=0 filters=0
 ```
 
-## 8. 从“方程式 + 现成分子图片目录”直接生成
+## 5. 模板选择和画布规则
 
-如果你没有标准 `README.md` 文件夹，只是手里有一个分子图片目录，可以用：
+当前有两类模板实现：
+
+```text
+reaction_pathway/unified_card_template.py
+reaction_pathway/hydroxyacetone_convergent.py
+```
+
+`unified_card_template.py` 用于普通线性路径。
+
+`hydroxyacetone_convergent.py` 用于 `HMF_Hydroxyacetone_like_Path`，因为它有四步、并行输入和汇聚重组，需要更大画布。
+
+规则：
+
+- 两步或三步线性路径可以使用通用模板。
+- 多步、并行、汇聚路径应使用大画布或专用模板。
+- 不要为了塞进固定画布而把箭头画得过小。
+- 模板图如果显示空间更宽，SVG 画布也应相应扩大。
+
+## 6. 内部工具说明
+
+仓库里仍然保留了一些早期脚本：
 
 ```text
 scripts/stitch_reaction_pathway.py
-```
-
-它是 `python -m reaction_pathway.from_assets` 的薄包装。
-
-命令格式：
-
-```powershell
-python scripts\stitch_reaction_pathway.py `
-  --equation "<反应方程式>" `
-  --asset-dir <分子图片目录> `
-  --output-dir <输出目录> `
-  [--title <图标题>] `
-  [--svg-name pathway.svg] `
-  [--width 1400] `
-  [--height 620] `
-  [--asset-map <JSON 映射文件>]
-```
-
-例子：
-
-```powershell
-python scripts\stitch_reaction_pathway.py `
-  --equation "HMF -> C3H5O2 + C3HO -> CH2O + C2H3O" `
-  --asset-dir D:\data\openclaw_reacnet\HMF_Formaldehyde_Path `
-  --output-dir outputs\hmf_formaldehyde_from_assets `
-  --title "HMF Formaldehyde Path"
-```
-
-输出：
-
-```text
-outputs/hmf_formaldehyde_from_assets/
-  generated_spec.json
-  manifest.json
-  pathway.svg
-  molecules/
-```
-
-如果文件名和物种名对不上，使用 `--asset-map`。
-
-`asset_map.json` 例子：
-
-```json
-{
-  "HMF": "D:/data/openclaw_reacnet/HMF_Formaldehyde_Path/HMF_S1350_bond1.2.png",
-  "C3H5O2": "D:/data/openclaw_reacnet/HMF_Formaldehyde_Path/C3H5O2_S3400_bond1.2.png",
-  "C3HO": "D:/data/openclaw_reacnet/HMF_Formaldehyde_Path/C3HO_S3573_bond1.2.png",
-  "CH2O": "D:/data/openclaw_reacnet/HMF_Formaldehyde_Path/CH2O_S596_bond1.2.png",
-  "C2H3O": "D:/data/openclaw_reacnet/HMF_Formaldehyde_Path/C2H3O_S2044_bond1.2.png"
-}
-```
-
-运行：
-
-```powershell
-python scripts\stitch_reaction_pathway.py `
-  --equation "HMF -> C3H5O2 + C3HO -> CH2O + C2H3O" `
-  --asset-dir D:\data\openclaw_reacnet\HMF_Formaldehyde_Path `
-  --asset-map D:\data\openclaw_reacnet\HMF_Formaldehyde_Path\asset_map.json `
-  --output-dir outputs\hmf_formaldehyde_from_assets
-```
-
-## 9. 从 README 单文件夹生成旧版 pathway.svg
-
-脚本：
-
-```text
 scripts/stitch_path_readme.py
-```
-
-它会从一个 Path 文件夹读取 README，并输出旧版 `pathway.svg`。现在推荐优先使用 `generate_all_unified_pathways.py` 或 `reaction_pathway.unified_card_template`，但这个脚本保留给早期流程兼容。
-
-命令格式：
-
-```powershell
-python scripts\stitch_path_readme.py <PathFolder> `
-  --output-dir <输出目录> `
-  [--title <标题>] `
-  [--width 1400] `
-  [--height 620]
-```
-
-例子：
-
-```powershell
-python scripts\stitch_path_readme.py `
-  D:\data\openclaw_reacnet\HMF_Formaldehyde_Path `
-  --output-dir outputs\hmf_from_readme
-```
-
-输出：
-
-```text
-outputs/hmf_from_readme/
-  generated_spec.json
-  manifest.json
-  pathway.svg
-  molecules/
-```
-
-## 10. 从 JSON spec 生成 SVG
-
-脚本：
-
-```text
 scripts/generate_reaction_pathway.py
+reaction_pathway/from_assets.py
+reaction_pathway/from_readme.py
+reaction_pathway/cli.py
 ```
 
-它是 `python -m reaction_pathway.cli` 的薄包装，适合未来前端直接提交结构化 JSON，而不是 README。
+这些脚本不是用户工作流里的“其他输入方式”。它们只是内部工具：
 
-命令格式：
+- 用于调试某个阶段；
+- 用于兼容早期实验；
+- 用于未来前端把完整输入包转换成结构化 spec。
 
-```powershell
-python scripts\generate_reaction_pathway.py <spec.json> `
-  --output-dir <输出目录> `
-  [--backend auto|smiles-to-3d|placeholder] `
-  [--svg-name pathway.svg]
-```
-
-用项目自带 spec 生成：
-
-```powershell
-python scripts\generate_reaction_pathway.py `
-  examples\reaction_pathway_hmf.json `
-  --output-dir outputs\hmf_spec_demo `
-  --backend placeholder
-```
-
-输出：
+产品说明只保留下面这一种表述：
 
 ```text
-outputs/hmf_spec_demo/
-  manifest.json
-  pathway.svg
-  molecules/
+唯一输入方式：反应方程式 + 分子结构图 + 模板图。
+README、asset map、JSON spec 都只是这个完整输入包的内部表示。
 ```
 
-`--backend` 说明：
+## 7. SAM/Roboflow 模板分割
 
-| backend | 说明 |
-| --- | --- |
-| `placeholder` | 不调用真实分子渲染，只生成占位分子图，适合测试布局 |
-| `smiles-to-3d` | 尝试调用本地 `smiles-to-3d` 工作流 |
-| `auto` | 优先真实渲染，不可用时回退 |
-
-当前主工作流已经假设你有现成 PNG，所以一般不需要这个入口。
-
-## 11. 可选：Roboflow/SAM 分割参考图
-
-脚本：
-
-```text
-reaction_pathway/sam_roboflow.py
-```
-
-用途：当你手里只有一张参考 PNG，希望先分割出图里的节点、箭头、legend、方程框等区域时，可以用这个脚本生成 box library。当前 SVG 生成流程不依赖它。
-
-先设置 API key：
-
-```powershell
-$env:ROBOFLOW_API_KEY="你的 Roboflow API key"
-```
-
-命令格式：
+如果输入模板图是 PNG，后续可以用 SAM/Roboflow 做模板元素分割：
 
 ```powershell
 python -m reaction_pathway.sam_roboflow `
-  --image <参考图 PNG> `
+  --image <template.png> `
   --output-dir <输出目录> `
-  [--prompts "molecular node,reaction equation box,legend,arrow"] `
-  [--min-score 0.0] `
-  [--min-area 900] `
-  [--merge-threshold 0.65]
-```
-
-例子：
-
-```powershell
-python -m reaction_pathway.sam_roboflow `
-  --image "C:\Users\MECHREVO\Downloads\template.png" `
-  --output-dir outputs\template_segmentation `
   --prompts "molecular node,reaction equation box,step label,legend,arrow,text box"
 ```
 
-输出：
+输出可作为模板元素库：
 
 ```text
 outputs/template_segmentation/
@@ -508,23 +290,25 @@ outputs/template_segmentation/
   icons/
 ```
 
-## 12. 推荐的日常工作顺序
+这个步骤的定位是“模板图解析”，不是独立输入方式。它服务于同一个完整输入包。
 
-第一步：准备每条路径的文件夹。
+## 8. 推荐日常流程
+
+第一步：准备完整输入包。
 
 ```text
 D:\data\openclaw_reacnet\
   HMF_Formaldehyde_Path\
     README.md
+    template.png
     HMF_S1350_bond1.2.png
-    ...
-  HMF_Hydroxyacetone_like_Path\
-    README.md
-    HMF_S1350_bond1.2.png
-    ...
+    C3H5O2_S3400_bond1.2.png
+    C3HO_S3573_bond1.2.png
+    CH2O_S596_bond1.2.png
+    C2H3O_S2044_bond1.2.png
 ```
 
-第二步：批量生成。
+第二步：生成。
 
 ```powershell
 python scripts\generate_all_unified_pathways.py --root D:\data\openclaw_reacnet
@@ -536,22 +320,30 @@ python scripts\generate_all_unified_pathways.py --root D:\data\openclaw_reacnet
 python scripts\validate_unified_svgs.py --root D:\data\openclaw_reacnet
 ```
 
-第四步：用 Inkscape 打开目标文件。
+第四步：打开 SVG。
 
 ```text
 D:\data\openclaw_reacnet\<PathFolder>\unified_svg\pathway_unified.svg
 ```
 
-## 13. 前端包装建议
+## 9. 前端包装建议
 
-后期做前端时，建议接口按这个结构设计：
-
-上传内容：
+前端不要设计成三个入口。应设计成一个上传任务：
 
 ```text
-root/
+上传完整输入包
+  ├─ 反应方程式
+  ├─ 分子结构图
+  └─ 模板图
+```
+
+推荐请求结构：
+
+```text
+upload/
   Some_Path/
     README.md
+    template.png
     *.png
 ```
 
@@ -559,8 +351,8 @@ root/
 
 ```powershell
 python scripts\generate_all_unified_pathways.py `
-  --root <上传解压后的 root> `
-  --only <用户选择的 Path 文件夹名>
+  --root <uploaded-root> `
+  --only <folder-name>
 ```
 
 后端返回：
@@ -572,43 +364,53 @@ python scripts\generate_all_unified_pathways.py `
 }
 ```
 
-如果前端直接提交结构化数据，可以跳过 README 解析，生成 JSON spec 后走：
+如果前端直接传 JSON，也必须包含三类字段：
 
-```powershell
-python scripts\generate_reaction_pathway.py <spec.json> --output-dir <output>
+```json
+{
+  "equation": "...",
+  "molecules": [
+    {"id": "HMF", "asset_path": "..."}
+  ],
+  "template": {
+    "image": "template.png",
+    "layout_data": "optional parsed template boxes"
+  }
+}
 ```
 
-## 14. 常见问题
+这仍然是同一个输入方式，只是换了数据承载格式。
 
-### 找不到 README.md
+## 10. 常见错误
 
-报错类似：
+### 缺少反应方程式
+
+错误：
 
 ```text
 README.md not found
+Could not find a fenced reaction equation
 ```
 
-检查目标路径是不是直接指向某个 Path 文件夹，或者 `--root` 下是否真的有 `*Path` / `*Pass` 子文件夹。
+处理：补齐 `README.md` 或等价的结构化 `equation` 字段。
 
-### 找不到分子图片
+### 缺少分子结构图
 
-报错类似：
+错误：
 
 ```text
 No matching molecule image for species: CH2O
 ```
 
-检查图片名是否能对应物种名。例如 `CH₂O` 最好命名为：
+处理：补齐对应图片，或通过 asset map 明确指定物种和图片路径。
 
-```text
-CH2O_S596_bond1.2.png
-```
+### 缺少模板图
 
-如果命名无法统一，用 `scripts/stitch_reaction_pathway.py --asset-map` 手动指定。
+应视为输入不完整。处理：补齐 `template.png`、`template.svg` 或已解析好的 template layout data。
 
 ### SVG 在 Inkscape 里图片丢失
 
-运行验证：
+运行：
 
 ```powershell
 python scripts\validate_unified_svgs.py --root <root>
@@ -622,23 +424,31 @@ embedded_png > 0
 filters=0
 ```
 
-如果 `external_assets` 不是 0，说明 SVG 里还有外链图片路径，需要重新用本项目的 unified 工作流生成。
+### 路径步骤多，图太挤
 
-### 反应步骤太多，图显得挤
+不要把内容压进固定画布。应根据模板图扩大画布，或者新增专用模板。`HMF_Hydroxyacetone_like_Path` 已经使用 `2400 x 1600`。
 
-这种情况不要强行用小画布。当前 `HMF_Hydroxyacetone_like_Path` 已经使用 `2400 x 1600` 专用模板。后续如果有新的四步、五步、汇聚或并行路径，建议新增一个专用模板，或者扩展通用模板的画布自动缩放规则。
+## 11. 命令清单
 
-### 想看所有命令参数
-
-每个脚本都支持 `--help`：
+主流程：
 
 ```powershell
 python scripts\generate_all_unified_pathways.py --help
 python scripts\validate_unified_svgs.py --help
+```
+
+模板解析：
+
+```powershell
+python -m reaction_pathway.sam_roboflow --help
+```
+
+内部调试工具：
+
+```powershell
 python scripts\stitch_reaction_pathway.py --help
 python scripts\stitch_path_readme.py --help
 python scripts\generate_reaction_pathway.py --help
 python -m reaction_pathway.unified_card_template --help
 python -m reaction_pathway.hydroxyacetone_convergent --help
-python -m reaction_pathway.sam_roboflow --help
 ```

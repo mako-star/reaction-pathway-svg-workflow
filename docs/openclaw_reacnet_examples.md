@@ -5,8 +5,14 @@ sample set prepared during this workflow. Each folder includes:
 
 - original pathway `README.md`;
 - molecule structure PNGs generated upstream from SMILES/3D rendering;
+- a template role supplied by the current code templates (`unified_card_template`
+  or `hydroxyacetone_convergent`) rather than a separate raster `template.png`;
 - generated standalone SVG in `unified_svg/pathway_unified.svg`;
 - machine-readable generated spec in `unified_svg/generated_spec.json`.
+
+For production use, treat the template as a required input alongside the
+equation and molecule images. The checked-in examples are historical fixtures:
+their template image has already been translated into Python template code.
 
 ## HMF -> Formaldehyde Path
 

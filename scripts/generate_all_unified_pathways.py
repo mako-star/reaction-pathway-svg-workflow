@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Generate unified standalone SVGs for all *Path/*Pass folders.
+"""Generate unified standalone SVGs for complete *Path/*Pass input packages.
 
 The input folder convention is intentionally simple:
 
 - each pathway lives in one directory whose name ends with Path or Pass;
 - the directory contains a README.md with a fenced reaction equation;
-- molecule renderings are stored beside the README as PNG files.
+- molecule renderings are stored beside the README as PNG files;
+- a template image or code-backed template is available for the visual layout.
 
 By default this script targets the local OpenClaw working directory used during
 development, but the root is configurable so the workflow can be reproduced from
@@ -27,11 +28,11 @@ ROOT = Path("examples/openclaw_reacnet")
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Generate standalone SVGs for pathway folders.")
+    parser = argparse.ArgumentParser(description="Generate standalone SVGs from complete pathway input packages.")
     parser.add_argument(
         "--root",
         default=str(ROOT),
-        help="Root directory containing *Path/*Pass folders.",
+        help="Root directory containing complete *Path/*Pass input packages.",
     )
     parser.add_argument(
         "--only",

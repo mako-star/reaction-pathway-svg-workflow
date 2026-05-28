@@ -14,15 +14,17 @@ python -m pip install -r requirements.txt
 
 ## Repository Tools
 
-- `reaction_pathway.unified_card_template`: generic standalone SVG generator.
+- `reaction_pathway.unified_card_template`: code implementation of the default
+  template-driven standalone SVG generator.
 - `reaction_pathway.hydroxyacetone_convergent`: enlarged custom layout for the
   HMF hydroxyacetone-like convergent pathway.
 - `reaction_pathway.from_readme`: extracts reaction equations from pathway
-  README files.
+  README files; internal utility, not a separate user input mode.
 - `reaction_pathway.from_assets`: matches molecule species to local image
-  assets and builds structured specs.
+  assets and builds structured specs; internal utility, not a separate user
+  input mode.
 - `scripts/generate_all_unified_pathways.py`: batch entry point for `*Path` and
-  `*Pass` folders.
+  `*Pass` folders containing the complete input package.
 - `scripts/validate_unified_svgs.py`: XML/resource validation for generated SVGs.
 
 ## Upstream/External Tools Used In The Data Pipeline
@@ -36,10 +38,13 @@ already exist, but they are part of the upstream molecule-rendering workflow:
 - Inkscape: manual inspection and downstream SVG editing.
 - Microsoft Edge/Chromium headless mode: optional local SVG screenshot preview.
 
-## Optional Future Tools
+## Template Tools
 
-- Roboflow/SAM-style segmentation can be used for template/icon detection when
-  starting from a raster reference image, but the current reproducible workflow
-  does not require it. The current output is generated directly as SVG groups.
-- A web frontend can wrap this workflow by uploading a pathway folder and
-  returning the generated standalone SVG plus `generated_spec.json`.
+- Roboflow/SAM-style segmentation is used to parse a raster template image into
+  template regions such as molecule cards, arrows, equation boxes, and legends.
+- The current checked-in templates are code implementations of template images.
+  They should be treated as the template part of the complete input package
+  until raster-template parsing is fully connected.
+- A web frontend should upload one complete pathway package containing reaction
+  equation, molecule images, and template image, then return the generated
+  standalone SVG plus `generated_spec.json`.

@@ -1,4 +1,4 @@
-"""Batch-generate standalone Inkscape-safe pathway SVGs from Path folders."""
+"""Generate standalone Inkscape-safe pathway SVGs from complete Path packages."""
 
 from __future__ import annotations
 
@@ -33,7 +33,13 @@ PALETTE = [
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Generate unified standalone pathway SVGs.")
-    parser.add_argument("path_dir", help="One Path folder containing README.md and molecule PNGs.")
+    parser.add_argument(
+        "path_dir",
+        help=(
+            "One Path folder containing the complete input package: reaction "
+            "equation, molecule images, and a template/template implementation."
+        ),
+    )
     parser.add_argument("--output-dir", help="Output directory. Defaults to <path_dir>/unified_svg.")
     parser.add_argument("--svg-name", default="pathway_unified.svg")
     return parser

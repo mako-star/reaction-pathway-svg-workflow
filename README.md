@@ -1,38 +1,68 @@
 # Reaction Pathway SVG Workflow
 
-This repository packages a reproducible workflow for turning chemistry reaction
-pathway folders into publication-style editable SVG figures.
+This repository packages a reproducible workflow for generating publication-style
+editable SVG reaction pathway figures.
 
-## What It Does
+## Core Rule
 
-The pathway workflow takes a directory containing:
+There is only one valid input model for the intended workflow. A pathway job is
+allowed to run only when the following three inputs are present together:
 
-- `README.md` with a fenced reaction equation;
-- molecule structure PNGs generated from SMILES/3D rendering tools;
-- optional pathway-specific layout rules.
+1. A chemical reaction equation.
+2. Molecule structure images for every species in the equation.
+3. A template image that defines the visual style and layout target.
 
-It produces a standalone `pathway_unified.svg` that is safe to open in Inkscape:
+These are not three alternative modes. They are one complete input package. The
+equation provides chemical topology, the molecule images provide visual content,
+and the template image provides the figure style to reproduce. If any one of the
+three is missing, the workflow is incomplete and should not proceed.
 
-- molecule PNGs are embedded as resized `data:image/png;base64` assets;
-- no external asset links are required;
-- no SVG filters are used;
-- each major visual block is grouped with a stable SVG id for later editing.
+## What It Produces
 
-### Quick Start
+The workflow converts one complete pathway input package into a standalone
+`pathway_unified.svg`:
 
-Install the Python dependency:
+- molecule images are embedded as resized `data:image/png;base64` assets;
+- the SVG has no external image links;
+- the SVG avoids fragile SVG filters;
+- major visual blocks are grouped with stable SVG ids for later editing in
+  Inkscape or another SVG editor.
+
+## Expected Input Package
+
+Each reaction pathway lives in one folder:
+
+```text
+Some_Reaction_Path/
+  README.md                  # contains the reaction equation
+  template.png               # required visual template/reference image
+  HMF_S1350_bond1.2.png       # molecule image
+  C3H5O2_S3400_bond1.2.png    # molecule image
+  C3HO_S3573_bond1.2.png      # molecule image
+  CH2O_S596_bond1.2.png       # molecule image
+  C2H3O_S2044_bond1.2.png     # molecule image
+```
+
+The current command-line implementation reads the reaction equation and molecule
+images directly. Template handling is represented by the selected SVG template
+implementation; future segmentation/template-parsing code should consume the
+template image explicitly before generation.
+
+## Quick Start
+
+Install dependencies:
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-Generate all checked-in examples:
+Generate checked-in examples:
 
 ```powershell
 python scripts\generate_all_unified_pathways.py --root examples\openclaw_reacnet
 ```
 
-Validate the generated SVG files:
+Validate generated SVG files:
 
 ```powershell
 python scripts\validate_unified_svgs.py --root examples\openclaw_reacnet
@@ -57,37 +87,11 @@ python scripts\generate_all_unified_pathways.py `
 - [Detailed usage and commands](docs/usage.md)
 - [Workflow guide](docs/reaction_pathway_workflow.md)
 - [Tool inventory](docs/tools.md)
-- [Today example data: equations and SMILES](docs/openclaw_reacnet_examples.md)
+- [Example data: equations and molecule images](docs/openclaw_reacnet_examples.md)
 
-The checked-in example data lives under `examples/openclaw_reacnet`.
+## Important Constraint
 
-## Common Commands
-
-Show help for the main batch generator:
-
-```powershell
-python scripts\generate_all_unified_pathways.py --help
-```
-
-Generate all checked-in demo pathways:
-
-```powershell
-python scripts\generate_all_unified_pathways.py --root examples\openclaw_reacnet
-```
-
-Generate one pathway from a local OpenClaw/ReacNet folder:
-
-```powershell
-python scripts\generate_all_unified_pathways.py `
-  --root D:\data\openclaw_reacnet `
-  --only HMF_Formaldehyde_Path
-```
-
-Validate generated standalone SVG files:
-
-```powershell
-python scripts\validate_unified_svgs.py --root examples\openclaw_reacnet
-```
-
-For full command formats, input-folder rules, output files, and troubleshooting,
-see [docs/usage.md](docs/usage.md).
+Do not present equation-only, molecule-image-only, README-only, or JSON-only
+generation as user-facing workflows. Those scripts may exist as internal
+developer utilities, but the product workflow requires the complete three-part
+input package.
